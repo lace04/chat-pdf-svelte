@@ -15,6 +15,9 @@ Basado en <a href="https://github.com/midudev/chat-with-pdf">chat-with-pdf</a>
 
 </div>
 
+![sc](https://github.com/lace04/chat-pdf-svelte/assets/73793929/de3c34d5-92a5-4d5e-a362-80a3a5a578c3)
+
+
 ## 🛠️ Stack
 
 - [**Astro**](https://astro.build/) - El framework web de la nueva época.
