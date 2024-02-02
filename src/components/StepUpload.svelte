@@ -1,6 +1,6 @@
 <script>
   import {Alert} from 'flowbite-svelte'
-  import {appStatus, setAppStatusLoading} from '@/store'
+  import {appStatus, setAppStatusError, setAppStatusChatMode, setAppStatusLoading} from '@/store'
 
   import Dropzone from "svelte-file-dropzone";
 
@@ -9,20 +9,39 @@
     rejected: []
   };
 
-  function handleFilesSelect(e) {
+  async function handleFilesSelect(e) {
     const { acceptedFiles, fileRejections } = e.detail;
     files.accepted = [...files.accepted, ...acceptedFiles];
     files.rejected = [...files.rejected, ...fileRejections];
 
     if(acceptedFiles.length > 0) {
       setAppStatusLoading();
+
+      const formData = new FormData();
+      formData.append('file', acceptedFiles[0]);
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if(!res.ok){
+        setAppStatusError();
+        return;
+      }
+
+      const {id, url, pages} = await res.json();
+      setAppStatusChatMode({id, url, pages});
     }
   }
 </script>
 
+{#if files.accepted.length === 0}
 <Dropzone on:drop={handleFilesSelect} multiple={false} accept={"application/pdf"}>
     <p class="text-black/70 text-pretty">Arrastra y suelta tus archivos PDF aquí</p>
 </Dropzone>
+{/if}
+
 <ol>
   {#each files.accepted as item}
     <li>{item.name}</li>
