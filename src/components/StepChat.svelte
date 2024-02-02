@@ -1,6 +1,6 @@
 <script>
   import { Label, Input, Spinner  } from 'flowbite-svelte';
-  import {appStatusInfo} from '@/store'
+  import {appStatusInfo, setAppStatusError} from '@/store'
   const {id, url, pages} = $appStatusInfo;
 
   let answer = '';
@@ -20,26 +20,30 @@
 
     const question = event.target.question.value;
 
-    const res = await fetch('/api/ask', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        id,
-        question,
+    try {
+      const res = await fetch('/api/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id,
+          question,
+        })
       })
-    })
 
-  if (!res.ok) {
-    loading = false;
-    console.error('Error al enviar la pregunta')
-    return
-  }
-
-  const {answer: apiAnswer} = await res.json();
-  answer = apiAnswer;
-  loading = false;
+      if (!res.ok) {
+        loading = false;
+        console.error('Error al enviar la pregunta')
+        return
+      }
+      const {answer: apiAnswer} = await res.json();
+      answer = apiAnswer;
+    } catch (error) {
+      setAppStatusError();
+    }finally{
+      loading = false;
+    }
 }
 
 </script>
